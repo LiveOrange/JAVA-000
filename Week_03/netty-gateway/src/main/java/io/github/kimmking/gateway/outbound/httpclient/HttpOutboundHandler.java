@@ -1,6 +1,3 @@
-### 作业一 使用Netty实现HttpClient访问
-
-```
 package io.github.kimmking.gateway.outbound.httpclient;
 
 import io.netty.buffer.Unpooled;
@@ -65,7 +62,7 @@ public class HttpOutboundHandler {
         }
     }
 
-    private void fetchGet(final FullHttpRequest inbound, final ChannelHandlerContext ctx, final String url){
+    private void fetchGet(final FullHttpRequest inbound, final ChannelHandlerContext ctx, final String url) {
         final HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_KEEP_ALIVE);
         try {
@@ -87,45 +84,3 @@ public class HttpOutboundHandler {
         }
     }
 }
-
-```
-
-### 作业二 添加过滤器
-
-```
-package io.github.kimmking.gateway.filter;
-
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-
-public class HttpHeadRequestFilter implements HttpRequestFilter {
-    @Override
-    public void filter(FullHttpRequest fullRequest, ChannelHandlerContext ctx) {
-        fullRequest.headers().set("name", "NioNetty");
-    }
-}
-```
-
-### 作业三 添加路由
-
-```
-package io.github.kimmking.gateway.router;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-public class RoundEndpointRouter implements HttpEndpointRouter {
-    private static final AtomicLong CURRENT = new AtomicLong(0);
-
-    @Override
-    public String route(List<String> endpoints) {
-        int size = endpoints.size();
-        if (size < 2) {
-            return endpoints.get(0);
-        }
-
-        long nextIndex = CURRENT.incrementAndGet() % size;
-        return endpoints.get((int) nextIndex);
-    }
-}
-```
