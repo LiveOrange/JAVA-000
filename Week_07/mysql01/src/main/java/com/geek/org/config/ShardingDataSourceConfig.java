@@ -25,11 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 @Slf4j
-@MapperScan(basePackages = ShardingDataSourceConfig.PACKAGE, sqlSessionFactoryRef = "masterSqlSessionFactory")
 @Configuration
 public class ShardingDataSourceConfig {
-    static final String PACKAGE = "com.geek.org.dao";
-    static final String MAPPER_LOCATION = "classpath:mapping/*.xml";
+
 
     @Bean(name = "shardingSphereDataSource")
     public DataSource shardingSphereDataSource(@Qualifier("masterDataSource") DataSource master, @Qualifier("slaveDataSource") DataSource slave) throws SQLException {
@@ -47,19 +45,4 @@ public class ShardingDataSourceConfig {
         return ShardingSphereDataSourceFactory.createDataSource(dataSources, Collections.singleton(ruleConfiguration), new Properties());
     }
 
-    @Bean
-    @Primary
-    public DataSourceTransactionManager masterTransactionManager(@Qualifier("shardingSphereDataSource") DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-
-    @Bean
-    @Primary
-    public SqlSessionFactory masterSqlSessionFactory(@Qualifier("shardingSphereDataSource") DataSource dataSource) throws Exception {
-        final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
-        sessionFactory.setTypeAliasesPackage(PACKAGE);
-        sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(MAPPER_LOCATION));
-        return sessionFactory.getObject();
-    }
 }
