@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<configuration status="INFO" strict="true">
+    <!--变量配置-->
+    <Properties>
+        <property name="APP_NAME" value="prvoider-consumer"/>
+        <property name="LOG_PATTERN"  value="%d{yyyy-MM-dd HH:mm:ss.SSS} [${APP_NAME},%X{X-traceId}]%-4level [%thread] %logger - %msg%n"/>
+        <property name="CONSUMER_REMOTE_PATH" value="/log/logs/serviceOut.log"/>
+        <property name="FILE_PATH" value="/log/logs/${APP_NAME}/"/>
+        <property name="FILE_DATE_PATH" value="/log/logs/${APP_NAME}/$${date:yyyy-MM-dd}"/>
+    </Properties>
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <param name="Append" value="true"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </console>
+        <RollingFile name="RollingFileInfo" fileName="${FILE_PATH}/biz.log" filePattern="${FILE_DATE_PATH}/biz-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileWarn" fileName="${FILE_PATH}/biz.log"  filePattern="${FILE_DATE_PATH}/biz-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileError" fileName="${FILE_PATH}/error.log"  filePattern="${FILE_DATE_PATH}/error-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="consumerRemoteFileInfo" fileName="${CONSUMER_REMOTE_PATH}"  filePattern="${FILE_DATE_PATH}/serviceOut-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+</configuration>
