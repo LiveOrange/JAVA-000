@@ -1,0 +1,52 @@
+# 分库信息
+dataSources:
+  db0: !!com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/db0?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    maxActive: 10
+  db1: !!com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3307/db1?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    maxActive: 10
+
+# 分片规则
+rules:
+  - !SHARDING
+    tables:
+      t_user:
+        actualDataNodes: db${0..1}.t_user${0..2}
+        tableStrategy:
+          standard:
+            shardingColumn: id #表分片键
+            shardingAlgorithmName: t_user_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: id  #分库分片键
+        shardingAlgorithmName: database_inline
+    defaultTableStrategy:
+      none:
+
+    shardingAlgorithms:
+      database_inline: #分库分片策略
+        type: INLINE
+        props:
+          algorithm-expression: db${id % 2}
+      t_user_inline: #表分片策略
+        type: INLINE
+        props:
+          algorithm-expression: t_user${id % 3}
+
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
+props:
+  sql-show: true
