@@ -1,4 +1,4 @@
-# 分库信息
+# 数据库信息
 dataSources:
   db0: !!com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
@@ -17,31 +17,46 @@ dataSources:
 rules:
   - !SHARDING
     tables:
+      t_order:
+        actualDataNodes: db${0..1}.t_order${0..2}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id # 表分片键
+            shardingAlgorithmName: t_order_inline
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
       t_user:
         actualDataNodes: db${0..1}.t_user${0..2}
         tableStrategy:
           standard:
-            shardingColumn: id #表分片键
+            shardingColumn: consumer_id # 表分片键
             shardingAlgorithmName: t_user_inline
         keyGenerateStrategy:
-          column: id
+          column: consumer_id
           keyGeneratorName: snowflake
+    bindingTables:
+      - t_order,t_user
     defaultDatabaseStrategy:
       standard:
-        shardingColumn: id  #分库分片键
+        shardingColumn: consumer_id  # 库分片键
         shardingAlgorithmName: database_inline
     defaultTableStrategy:
       none:
 
     shardingAlgorithms:
-      database_inline: #分库分片策略
+      database_inline: # 库分片策略
         type: INLINE
         props:
-          algorithm-expression: db${id % 2}
-      t_user_inline: #表分片策略
+          algorithm-expression: db${consumer_id % 2}
+      t_order_inline: # 表分片策略
         type: INLINE
         props:
-          algorithm-expression: t_user${id % 3}
+          algorithm-expression: t_order${order_id % 3}
+      t_user_inline: # 表分片策略
+        type: INLINE
+        props:
+         algorithm-expression: t_user${consumer_id % 3}
 
     keyGenerators:
       snowflake:
@@ -50,3 +65,4 @@ rules:
           worker-id: 123
 props:
   sql-show: true
+

@@ -3,18 +3,15 @@ package com.geek.sharding.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class UserDO implements Serializable {
-    private Long id;
+public class OrderDO implements Serializable {
     private Long consumerId;
-    private String userName;
-    private String email;
-    private String cardNo;
-    private String mobile;
+    private String orderId;
     private String state;
-    private Integer gender;
+    private BigDecimal amount;
     private Date createTime;
     private Date updateTime;
 }
