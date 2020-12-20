@@ -10,6 +10,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class DubboClientApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DubboClientApplication.class).close();
+        SpringApplication.run(DubboClientApplication.class, args);
     }
 }
