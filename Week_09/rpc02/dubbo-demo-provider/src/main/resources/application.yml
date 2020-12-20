@@ -1,0 +1,18 @@
+server:
+  port: 8180
+  
+spring:
+  application:
+    name: dubbo-demo-provider
+dubbo:
+  scan:
+    base-packages: io.kimmking.dubbo.demo.provider
+  registry:
+    address: zookeeper://localhost:2181
+  metadata-report:
+    address: zookeeper://localhost:2181
+druid:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/hmily?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password:
